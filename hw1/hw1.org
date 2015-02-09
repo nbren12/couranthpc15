@@ -1,0 +1,177 @@
+#+LATEX_HEADER: \usepackage[margin=1in]{geometry}
+#+OPTIONS: toc:nil num:nil
+#+TITLE: High resolution climate modeling
+
+Predicting the future climate is a challenging problem which is
+inextricably linked to high performance computing. While the
+underlying partial differential equations governing the fluid dynamics
+of coupled atmosphere-ocean system are the same as those in
+engineering-scale flows, direct numerical simulation of weather or
+climate on planetary scales will likely never be possible. Therefore,
+improving climate predictions necessarily requires coupling improved
+physical understanding (i.e. modeling) with increased computational
+power.
+
+The atmosphere and ocean are thin layers of fluid covering the surface
+of our rotating planet, and their dynamics are characterized in large
+part by this strong rotation. Much of the energy of the flow is
+concentrated at length scale known as the Rossby deformation radius
+\(L_d\), which is inversely proportional to the speed of the earth's
+rotation. In the midlatidude (\(\sim 45^{\circ}\)) atmosphere, this length
+scale is on the order of 1000s of km, but in the ocean, \(L_d \approx
+100 km\). In other words, ocean "weather" occurs on much smaller
+length scales than the large scale atmospheric weather patterns we are
+accustomed to; therefore, ocean models typically require much higher
+resolution to achieve the same degree of utility[fn:1] as their
+atmospheric counterparts.
+
+Oceanic models with resolution between 5-10 km are known as eddy
+resolving models, and they require an enormous amount of computational
+power. One of the research centers at the forefront of this effort is the
+NOAA Geophysical Fluid Dynamics Laboratory (GFDL) in Princeton, NJ,
+which produces the CM2.X series of climate models. The resolution of
+the atmospheric and oceanic models are shown in the following table
+(from [[http://www.gfdl.noaa.gov/wcrp2011_poster_c37_dixon_th85b_grids][GFDL]]).
+
+#+BEGIN_HTML
+<table><tbody><tr>
+<td bgcolor="#33e6e6" valign="middle" width="15%"><strong>model</strong><br>
+
+</td>
+
+<td bgcolor="#33e6e6" valign="middle" width="25%"><strong>atmosphere</strong><br>
+
+</td>
+
+<td bgcolor="#33e6e6" valign="middle" width="35%"><strong>ocean</strong><br>
+
+</td>
+
+<td bgcolor="#33e6e6" valign="middle" width="15%"><strong>land</strong><br>
+
+</td>
+
+</tr>
+
+<tr bgcolor="#d6ffff"><td valign="top"><strong>CM2.6</strong><br>
+
+(beta level - Oct 2011)<br>
+
+</td>
+
+<td valign="top">50 km cubed-sphere grid (C180)<br>
+
+32 levels
+</td>
+
+<td valign="top">square grid: ~11km at Equator to 5km at 65°N, etc.<br>
+
+tri-polar north of 65°N<br>
+
+50 z* levels<br>
+
+</td>
+
+<td valign="top">LM3 - for land water, energy, and carbon balance<br>
+
+</td>
+
+</tr>
+
+<tr bgcolor="#d6ffff"><td valign="top"><strong>CM2.5</strong><br>
+
+(Delworth et al. 2011, J Climate, in press)<br>
+
+</td>
+
+<td valign="top">50 km cubed-sphere grid (C180)<br>
+
+32 levels<br>
+
+</td>
+
+<td valign="top">square grid: ~28km at Equator to 12km at 65°N, etc.<br>
+
+tri-polar north of 65°N<br>
+
+50 z* levels</td>
+
+<td valign="top">LM3 - for land water, energy, and carbon balance
+
+</td>
+
+</tr>
+
+<tr bgcolor="#d6ffff"><td valign="top"><strong>CM2.1</strong><br>
+
+(Delworth et al. 2006, J Climate)
+
+</td>
+
+<td valign="top">2° longitude x 2.5° latitude<br>
+
+24 levels
+
+</td>
+
+<td valign="top">1° longitude x 1° latitude, reducing to 0.33° latitude in equatorial region<br>
+
+tripolar north of 65°N<br>
+
+50 levels</td>
+
+<td valign="top">LM2 - a previous generation land surface model<br>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+#+END_HTML
+
+It is worth highlighting that CM2.6 are some of the highest
+resolution global ocean simulations ever performed, but the
+atmospheric resolution is the same as CM2.5 due to the physical
+reasons above. As can be seen in the following figure taken from
+[[http://www.gfdl.noaa.gov/wcrp2011_poster_c37_dixon_th85b_eke][Delworth et al., 2011]], increasing the oceanic resolution dramatically
+improves the model output compared to observation --- compare the
+CM2.6 (upper right panel) to the observations (upper left panel) and
+the lower resolution simulations (bottom two panel).
+[[http://www.gfdl.noaa.gov/pix/user_images/kd/wcrp_2011/C37_Dixon_TH85B_EKE.jpg]]
+
+The oceanic component of the model is known as the Modular Ocean Model
+(MOM), and a complete technical description is available ([[https://gfdl.noaa.gov/cms-filesystem-action/model_development/ocean/mom-guide4p1.pdf][Griffies et
+al, 2010]]). It solves the so-called "primitive equations", which are an
+approximation to the Navier-Stokes equations valid in the atmosphere
+in ocean. The code is quite flexible in the variety of grids, time
+steppers, and advection schemes it employs. As described above, the
+horizontal grid in CM2.6 is a a square grid in the tropics and
+midlatitudes capped by a "tri-polar" grid in the polar regions. The
+model velocities and other variables are represented on a staggered
+grid, and various high-order differencing schemes and time steppers
+can be used. The parallelization strategy is a "straightforward
+processor domain decomposition", which is facilitated by the
+relatively simple structure of the grid.
+
+To provide some frame of reference for the the size of these
+simulations, the approximate number of horizontal grid points is \[
+\frac{360^{\circ}}{.1^{\circ}} \times \frac{180^{\circ}}{.1^{\circ}} =
+6.5 \cdot 10^{6}.\] The total number of grid points to represent a
+scaler variable is then approximately \(6.5 \cdot 10^6 \times 32
+\approx 2 \cdot 10^8\). If this variable is stored using double
+precision, this amounts to about 1.6GB of storage. A complicated model
+such as CM2.6 will typically consist of dozens of such scalar
+variables, so just storing the state of the system requires dozens of
+GB of memory. Moreover, running such a high resolution model requires
+small time steps (\(O(1 \text{ minute})\)) due to the CFL condition, which becomes an issue
+especially when simulating the climate a decade or century into the
+future.
+
+Since 2011, NOAA and GFDL use the [[https://www.ncrc.gov/][Gaea]] machine housed at [[http://www.ornl.gov/][Oak Ridge National
+Laboratory]]. That machine has a peak computation speed of over 1.1
+petaflops and over 120,320 cores.
+
+
+[fn:1] I hesitate to use the word "accuracy" in this context.

@@ -1,0 +1,66 @@
+#+TITLE: HPC HW 0 Problem 2
+#+AUTHOR: Noah D. Brenowitz
+#+LATEX_HEADER: \usepackage[margin=1in]{geometry}
+#+OPTIONS: toc:nil
+
+The source code for the Gauss-Seidel method with over-relaxation is
+give in the file =laplace.c=:
+
+#+INCLUDE: "./laplace.c" src  c
+
+This source is compiled and timed using the following shell script (=run.sh=):
+#+BEGIN_SRC sh
+  CC=gcc
+  CFLAGS=-lm
+  
+  ${CC} ${CFLAGS} -o laplace laplace.c
+  ${CC} ${CFLAGS} -O0 -o laplace0 laplace.c 
+  ${CC} ${CFLAGS} -O3 -o laplace3 laplace.c 
+  
+  
+  N=1000
+  time ./laplace $N > /dev/null
+  time ./laplace0 $N >/dev/null
+  time ./laplace3 $N > /dev/null
+  
+#+END_SRC
+
+The output for N=1000 is:
+#+BEGIN_EXAMPLE
+  $ zsh run.sh
+  ./laplace $N > /dev/null  12.03s user 0.00s system 100% cpu 12.031 total
+  ./laplace0 $N > /dev/null  12.05s user 0.00s system 100% cpu 12.045 total
+  ./laplace3 $N > /dev/null  9.48s user 0.00s system 100% cpu 9.477 total
+#+END_EXAMPLE
+
+There is around a 30% speed-up for the =-O3= optimized file compared
+to the non-optimized version. The number of iterations required to
+reach convergence is
+
+#+BEGIN_SRC sh :results output :exports both
+./laplace 1000 | wc -l 
+
+#+END_SRC
+
+#+RESULTS:
+: 1158227
+
+For N=100, the output is:
+
+#+BEGIN_EXAMPLE
+  zsh run.sh
+  ./laplace $N > /dev/null  0.02s user 0.00s system 94% cpu 0.017 total
+  ./laplace0 $N > /dev/null  0.01s user 0.00s system 98% cpu 0.016 total
+  ./laplace3 $N > /dev/null  0.01s user 0.00s system 92% cpu 0.013 total
+#+END_EXAMPLE
+
+So the N=100 code runs much more quickly. The number of iterations
+required for convergence here is
+#+BEGIN_SRC sh :results output :exports both
+./laplace 100 | wc -l 
+#+END_SRC
+
+#+RESULTS:
+: 11796
+
+

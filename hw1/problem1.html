@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>High resolution climate modeling</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="title" content="High resolution climate modeling"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2015-02-09T16:43-0500"/>
+<meta name="author" content="Noah Brenowitz"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/javascript" src="http://orgmode.org/mathjax/MathJax.js">
+/**
+ *
+ * @source: http://orgmode.org/mathjax/MathJax.js
+ *
+ * @licstart  The following is the entire license notice for the
+ *  JavaScript code in http://orgmode.org/mathjax/MathJax.js.
+ *
+ * Copyright (C) 2012-2013  MathJax
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @licend  The above is the entire license notice
+ * for the JavaScript code in http://orgmode.org/mathjax/MathJax.js.
+ *
+ */
+
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code below.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code below is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code below.
+*/
+<!--/*--><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        // Only one of the two following lines, depending on user settings
+        // First allows browser-native MathML display, second forces HTML/CSS
+        //  config: ["MMLorHTML.js"], jax: ["input/TeX"],
+            jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 100,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        }
+    });
+/*]]>*///-->
+</script>
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">High resolution climate modeling</h1>
+
+<p>Predicting the future climate is a challenging problem which is
+inextricably linked to high performance computing. While the
+underlying partial differential equations governing the fluid dynamics
+of coupled atmosphere-ocean system are the same as those in
+engineering-scale flows, direct numerical simulation of weather or
+climate on planetary scales will likely never be possible. Therefore,
+improving climate predictions necessarily requires coupling improved
+physical understanding (i.e. modeling) with increased computational
+power.
+</p>
+<p>
+The atmosphere and ocean are thin layers of fluid covering the surface
+of our rotating planet, and their dynamics are characterized in large
+part by this strong rotation. Much of the energy of the flow is
+concentrated at length scale known as the Rossby deformation radius
+\(L_d\), which is inversely proportional to the speed of the earth's
+rotation. In the midlatidude (\(\sim 45^{\circ}\)) atmosphere, this length
+scale is on the order of 1000s of km, but in the ocean, \(L_d \approx
+100 km\). In other words, ocean "weather" occurs on much smaller
+length scales than the large scale atmospheric weather patterns we are
+accustomed to; therefore, ocean models typically require much higher
+resolution to achieve the same degree of utility<sup><a class="footref" name="fnr-.1" href="#fn-.1">1</a></sup> as their
+atmospheric counterparts.
+</p>
+<p>
+Oceanic models with resolution between 5-10 km are known as eddy
+resolving models, and they require an enormous amount of computational
+power. One of the research centers at the forefront of this effort is the
+NOAA Geophysical Fluid Dynamics Laboratory (GFDL) in Princeton, NJ,
+which produces the CM2.X series of climate models. The resolution of
+the atmospheric and oceanic models are shown in the following table
+(from <a href="http://www.gfdl.noaa.gov/wcrp2011_poster_c37_dixon_th85b_grids">GFDL</a>).
+</p>
+
+
+<table><tbody><tr>
+<td bgcolor="#33e6e6" valign="middle" width="15%"><strong>model</strong><br>
+
+</td>
+
+<td bgcolor="#33e6e6" valign="middle" width="25%"><strong>atmosphere</strong><br>
+
+</td>
+
+<td bgcolor="#33e6e6" valign="middle" width="35%"><strong>ocean</strong><br>
+
+</td>
+
+<td bgcolor="#33e6e6" valign="middle" width="15%"><strong>land</strong><br>
+
+</td>
+
+</tr>
+
+<tr bgcolor="#d6ffff"><td valign="top"><strong>CM2.6</strong><br>
+
+(beta level - Oct 2011)<br>
+
+</td>
+
+<td valign="top">50 km cubed-sphere grid (C180)<br>
+
+32 levels
+</td>
+
+<td valign="top">square grid: ~11km at Equator to 5km at 65°N, etc.<br>
+
+tri-polar north of 65°N<br>
+
+50 z* levels<br>
+
+</td>
+
+<td valign="top">LM3 - for land water, energy, and carbon balance<br>
+
+</td>
+
+</tr>
+
+<tr bgcolor="#d6ffff"><td valign="top"><strong>CM2.5</strong><br>
+
+(Delworth et al. 2011, J Climate, in press)<br>
+
+</td>
+
+<td valign="top">50 km cubed-sphere grid (C180)<br>
+
+32 levels<br>
+
+</td>
+
+<td valign="top">square grid: ~28km at Equator to 12km at 65°N, etc.<br>
+
+tri-polar north of 65°N<br>
+
+50 z* levels</td>
+
+<td valign="top">LM3 - for land water, energy, and carbon balance
+
+</td>
+
+</tr>
+
+<tr bgcolor="#d6ffff"><td valign="top"><strong>CM2.1</strong><br>
+
+(Delworth et al. 2006, J Climate)
+
+</td>
+
+<td valign="top">2° longitude x 2.5° latitude<br>
+
+24 levels
+
+</td>
+
+<td valign="top">1° longitude x 1° latitude, reducing to 0.33° latitude in equatorial region<br>
+
+tripolar north of 65°N<br>
+
+50 levels</td>
+
+<td valign="top">LM2 - a previous generation land surface model<br>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<p>
+It is worth highlighting that CM2.6 are some of the highest
+resolution global ocean simulations ever performed, but the
+atmospheric resolution is the same as CM2.5 due to the physical
+reasons above. As can be seen in the following figure taken from
+<a href="http://www.gfdl.noaa.gov/wcrp2011_poster_c37_dixon_th85b_eke">Delworth et al., 2011</a>, increasing the oceanic resolution dramatically
+improves the model output compared to observation &mdash; compare the
+CM2.6 (upper right panel) to the observations (upper left panel) and
+the lower resolution simulations (bottom two panel).
+<img src="http://www.gfdl.noaa.gov/pix/user_images/kd/wcrp_2011/C37_Dixon_TH85B_EKE.jpg"  alt="http://www.gfdl.noaa.gov/pix/user_images/kd/wcrp_2011/C37_Dixon_TH85B_EKE.jpg" />
+</p>
+<p>
+The oceanic component of the model is known as the Modular Ocean Model
+(MOM), and a complete technical description is available (<a href="https://gfdl.noaa.gov/cms-filesystem-action/model_development/ocean/mom-guide4p1.pdf">Griffies et al, 2010</a>). It solves the so-called "primitive equations", which are an
+approximation to the Navier-Stokes equations valid in the atmosphere
+in ocean. The code is quite flexible in the variety of grids, time
+steppers, and advection schemes it employs. As described above, the
+horizontal grid in CM2.6 is a a square grid in the tropics and
+midlatitudes capped by a "tri-polar" grid in the polar regions. The
+model velocities and other variables are represented on a staggered
+grid, and various high-order differencing schemes and time steppers
+can be used. The parallelization strategy is a "straightforward
+processor domain decomposition", which is facilitated by the
+relatively simple structure of the grid.
+</p>
+<p>
+To provide some frame of reference for the the size of these
+simulations, the approximate number of horizontal grid points is \[
+\frac{360^{\circ}}{.1^{\circ}} \times \frac{180^{\circ}}{.1^{\circ}} =
+6.5 \cdot 10^{6}.\] The total number of grid points to represent a
+scaler variable is then approximately \(6.5 \cdot 10^6 \times 32
+\approx 2 \cdot 10^8\). If this variable is stored using double
+precision, this amounts to about 1.6GB of storage. A complicated model
+such as CM2.6 will typically consist of dozens of such scalar
+variables, so just storing the state of the system requires dozens of
+GB of memory. Moreover, running such a high resolution model requires
+small time steps (\(O(1 \text{ minute})\)) due to the CFL condition, which becomes an issue
+especially when simulating the climate a decade or century into the
+future.
+</p>
+<p>
+Since 2011, NOAA and GFDL use the <a href="https://www.ncrc.gov/">Gaea</a> machine housed at <a href="http://www.ornl.gov/">Oak Ridge National Laboratory</a>. That machine has a peak computation speed of over 1.1
+petaflops and over 120,320 cores.
+</p>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+<p class="footnote"><sup><a class="footnum" name="fn-.1" href="#fnr-.1">1</a></sup> I hesitate to use the word "accuracy" in this context.
+</p>
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2015-02-09T16:43-0500</p>
+<p class="author">Author: Noah Brenowitz</p>
+<p class="creator"><a href="http://orgmode.org">Org</a> version 7.9.3f with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>

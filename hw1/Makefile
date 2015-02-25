@@ -7,3 +7,6 @@ run: int_ring
 
 int_ring : int_ring.c
 	mpicc -o $@ $^
+
+vec_ring : vec_ring.c
+	mpicc -o $@ $^

@@ -10,3 +10,6 @@ int_ring : int_ring.c
 
 vec_ring : vec_ring.c
 	mpicc -o $@ $^
+
+laplace:laplace.c
+	clang -g -o $@ laplace.c

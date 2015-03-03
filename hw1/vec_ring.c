@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
 
   int megabyte = pow(2,20);
-  int sum_n = 10 * megabyte / sizeof(int);
+  int sum_n = 2 * megabyte / sizeof(int);
 
   void* sum_ptr = malloc(sum_n * sizeof(int));  // allocate memory
   
@@ -51,8 +51,6 @@ int main(int argc, char *argv[])
     }
   }
 
-  
   MPI_Finalize();
-  
   return 0;
 }

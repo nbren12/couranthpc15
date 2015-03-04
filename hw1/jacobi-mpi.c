@@ -42,7 +42,7 @@ double calc_resid_global(int N, double h2, double* f, double *u){
 void jacobi_laplace(int N, double h2, double *f, double *u, double *uc){
   int i;
 
-  for (i = 1; i < N-1; i++) {
+  for (i = 0; i < N; i++) {
     uc[i] = u[i];
   }
 
@@ -53,6 +53,28 @@ void jacobi_laplace(int N, double h2, double *f, double *u, double *uc){
 
 }
 
+void fill_ghost_cell(int rank, int world_size, MPI_Status * status,
+                     int n_per_proc, double* u){
+  if (rank > 0)
+    MPI_Send((void* ) (u + 1), 1, MPI_DOUBLE, rank -1, 0, MPI_COMM_WORLD);
+
+  if (rank < world_size - 1)
+    MPI_Send((void* ) (u + n_per_proc - 2), 1, MPI_DOUBLE, rank +1, 0, MPI_COMM_WORLD);
+
+  if (rank == 0) {
+    u[0] = 0.0;
+  } else {
+    MPI_Recv((void *) u, 1, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, status);
+  }
+
+  if (rank == world_size -1) {
+    u[n_per_proc -1] = 0.0;
+  } else {
+    MPI_Recv((void *) (u+n_per_proc -1), 1, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, status);
+    
+  }
+  
+}
 int main(int argc, char *argv[])
 {
 
@@ -96,23 +118,24 @@ int main(int argc, char *argv[])
   resid_global = calc_resid_global(n_per_proc, h2, f, u);
   resid_init = resid_global;
   
-  if (rank == 0)
-    printf("%f\n", resid_global);
+
+  
   
   
   while (resid_global / resid_init > STOP_ITER_RAT){
     
-    u[0] = 0.0;
-    u[n_per_proc - 1] = 0.0;
-    
+    if (rank == 0)
+        printf("Resid is %f\n", resid_global);
+    fill_ghost_cell(rank, world_size, &status, n_per_proc, u);
     jacobi_laplace(n_per_proc, h2, f, u, uc);
 
     // Calculate residual
+    fill_ghost_cell(rank, world_size, &status, n_per_proc, u);
     resid_global = calc_resid_global(n_per_proc, h2, f, u);
 
-    if (rank == 0)
-        printf("Resid is %f\n", resid_global);
   }
+  if (rank == 0)
+    printf("Resid is %f\n", resid_global);
 
   // deallocate
   free(f);

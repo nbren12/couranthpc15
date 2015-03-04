@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
   resid_init = calc_resid(N, f, u);
   resid_cur = resid_init;
   
+  printf("%f\n", resid_init);
   while (resid_cur / resid_init > STOP_ITER_RAT){
     
     jacobi_laplace(N, f, u, uc);

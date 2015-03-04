@@ -20,7 +20,22 @@ double calc_resid(int N, double h2, double* f, double *u){
     resid += ai*ai;
   }
   
-  return sqrt(resid);
+  return resid;
+}
+
+double calc_resid_global(int N, double h2, double* f, double *u){
+
+  double resid_local, resid_global;
+  
+  
+  resid_local = calc_resid(N, h2, f, u);
+  
+  MPI_Allreduce((void *) &resid_local, (void*) & resid_global, 1,
+                MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  resid_global = sqrt(resid_global);
+
+  return resid_global;
+  
 }
 
 
@@ -74,21 +89,29 @@ int main(int argc, char *argv[])
   }
 
   // Begin iterations
-  double resid_init, resid_cur;
-  resid_init = calc_resid(n_per_proc, h2, f, u);
-  resid_cur = resid_init;
-  printf("%f\n", resid_init);
+  double resid_init;
+  double resid_global;
+  
+  // Calculate Residual
+  resid_global = calc_resid_global(n_per_proc, h2, f, u);
+  resid_init = resid_global;
+  
+  if (rank == 0)
+    printf("%f\n", resid_global);
   
   
-  while (resid_cur / resid_init > STOP_ITER_RAT){
+  while (resid_global / resid_init > STOP_ITER_RAT){
     
     u[0] = 0.0;
     u[n_per_proc - 1] = 0.0;
     
     jacobi_laplace(n_per_proc, h2, f, u, uc);
 
-    resid_cur = calc_resid(n_per_proc, h2, f, u);
-    printf("Resid is %f\n", resid_cur );
+    // Calculate residual
+    resid_global = calc_resid_global(n_per_proc, h2, f, u);
+
+    if (rank == 0)
+        printf("Resid is %f\n", resid_global);
   }
 
   // deallocate

@@ -1,0 +1,130 @@
+#+TITLE: HPC: Assignment 1
+#+AUTHOR: Noah D. Brenowitz
+#+DATE: March 9, 2015
+#+OPTIONS: toc:nil num:nil
+
+*  Code submission
+
+I am using a single github repository for all of
+assignments in the course. Therefore, it will be necesary to =cd= into
+the directory for this assignment after cloning the repository. The
+following slight alteration to your commands should work.
+
+#+BEGIN_EXAMPLE
+  git clone https://github.com/nbren12/couranthpc15.git
+  cd couranthpc15/hw1
+  make
+  mpirun -np 10 ./int_ring 1000
+  mpirun -np 10 ./jacobi-mpi 10000 10
+#+END_EXAMPLE
+
+* Problem 1
+
+** =int_ring=
+
+To estimate the latency of network communcation the code was run using
+the following batch submission script on NYU's HPC resource.
+
+#+BEGIN_EXAMPLE
+  #!/bin/sh
+  #PBS -o /home/ndb245/int_ring.job.output
+  #PBS -l nodes=4:ppn=12,walltime=1000
+
+  mpirun -np 48 /home/ndb245/tmp/couranthpc15/hw1/int_ring 1000
+
+#+END_EXAMPLE
+
+The output of the run was
+#+BEGIN_EXAMPLE
+  Sum is 1128000
+  Total time = 84.156217 (ms)
+  Number of communications = 48000
+  Latency = 1753.254521 (ns)
+#+END_EXAMPLE
+
+** =vec_ring=
+
+The bandwidth of network communication was tested using the vector
+ring communication program. The submission script is:
+
+#+BEGIN_EXAMPLE
+  #!/bin/sh
+  #PBS -o /home/ndb245/vec_ring.job.output
+  #PBS -l nodes=4:ppn=12,walltime=1000
+
+  mpirun -np 48 /home/ndb245/tmp/couranthpc15/hw1/vec_ring 1000
+#+END_EXAMPLE
+
+and the output of the run is 
+#+BEGIN_EXAMPLE
+  Total time = 14372.772113 (ms)
+  Number of communication = 48000
+  Size of communication = 2.000000 (MB)
+  Average Bandwidth = 6679.296050(MB/s)
+#+END_EXAMPLE
+
+The average bandwidth is so high because the job is run on four 12
+core machines, so that only 4/48 communications are over the network.
+
+* Problem 2
+** Correctness of the parallel code
+
+Running the following commands yields identical output except for the
+total run time which is printed at the end.
+#+BEGIN_EXAMPLE
+  mpirun -np 1 ./jacobi-mpi 100 100000
+  mpirun -np 2 ./jacobi-mpi 100 100000
+#+END_EXAMPLE
+
+
+
+
+** Scaling of Parallel code
+
+The strong scaling experiment was run on the HPC using the following python script
+#+BEGIN_SRC python
+  import os
+  from subprocess import call
+  import tempfile
+
+
+  d = tempfile.mkdtemp(prefix='.tmp.', dir=os.getcwd())
+  os.chdir(d)
+
+  for np in [1, 2, 4, 8, 12, 24, 48]:
+      if np < 12:
+          nodes = 1
+      else:
+          nodes = int(np / 12)
+
+      subfile = '{np}.job.sh'.format(np=np)
+
+      with open(subfile, 'w') as f:
+          f.write('#!/bin/sh\n')
+          f.write('#PBS -l nodes={nodes}:ppn=12\n'.format(nodes=nodes))
+          f.write('#PBS -o /home/ndb245/job.output/{np}.output\n'.format(np=np))
+          f.write('mpirun -np {np}  /home/ndb245/tmp/couranthpc15/hw1/jacobi-mpi 48000 1000\n'.format(**locals()))
+
+      os.system('qsub %s'%subfile)
+
+#+END_SRC
+
+The following barchart summarizes the scaling of these runs.
+[[file:jacobi-mpi-scaling.png]]
+
+For <12 processors, doubling the number
+of processors approximately halves the total run time. However, once
+the number of processes exceeds 12 (which is the number of cores in
+each node), the run time actually increases. This is likely due to the
+increased latency of the network connection between nodes. However,
+there does appear to be some decrease in run time from 12 to 48
+processors, which suggest a new strong scaling regime takes hold when
+more than single node is used.
+
+** Parallel Gauss-Seidel
+
+A parallel implementation of this algorithm is difficult because the
+serial version of the algorithm modifies a single copy of the solution
+array inplace. Unlike the Jacobi iteration, which stores two seperate
+arrays, the Gauss-seidel algorithm would require several
+communications per loop through they array.

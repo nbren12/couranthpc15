@@ -1,2 +1,4 @@
-
-[[file:hw1/problem1.org][HW1 Problem 1]]
+#+OPTIONS: toc:nil num:nil
+* Homework 
+- [[file:hw0/problem1.org][Homework 0]]
+- [[file:hw1/hw1.org][Homework 1]]

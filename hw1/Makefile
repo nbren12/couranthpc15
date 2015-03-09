@@ -17,13 +17,13 @@ vec_ring : vec_ring.c
 	mpicc -o $@ $^
 
 jacobi-serial: jacobi-serial.c
-	clang -g -lm -o $@ jacobi-serial.c
+	clang -lm -o $@ jacobi-serial.c
 
 laplace: laplace.c
 	clang -g -lm -o $@ $^
 
 jacobi-mpi: jacobi-mpi.c
-	mpicc -lm -o $@ $^
+	mpicc -o $@ $^
 
 clean:
 	rm -f jacobi-mpi

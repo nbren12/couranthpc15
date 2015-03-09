@@ -2,4 +2,6 @@
 !*.c
 !*.h
 !*.org
-Makefile
+!*.sh
+!.gitignore
+!Makefile

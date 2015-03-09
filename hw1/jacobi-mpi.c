@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "mpi.h"
+#include "util.h"
 
 
 #define STOP_ITER_RAT 10e-6
@@ -79,6 +80,9 @@ int main(int argc, char *argv[])
 {
 
   int N = atoi(argv[1]);
+
+  const int max_iter = (argc == 3) ? atoi(argv[2]) : 0;
+  
   double h2 = 1.0/(N+1)/(N+1);
   double *u, *uc, *f;
 
@@ -117,15 +121,25 @@ int main(int argc, char *argv[])
   // Calculate Residual
   resid_global = calc_resid_global(n_per_proc, h2, f, u);
   resid_init = resid_global;
-  
 
+  if (rank == 0 )
+    printf("Initial residual is %f\n", resid_init);
   
   
-  
+  // Setup timers and prepare for iteration
+  int count = 1;
+  timestamp_type start, end;
+  double total_time;
+  if (rank==0) {
+    printf("\n");
+    printf("************************************************\n");
+    printf("               Begin Iterations                 \n");
+    printf("************************************************\n");
+  }
+  get_timestamp(&start);
   while (resid_global / resid_init > STOP_ITER_RAT){
     
-    if (rank == 0)
-        printf("Resid is %f\n", resid_global);
+
     fill_ghost_cell(rank, world_size, &status, n_per_proc, u);
     jacobi_laplace(n_per_proc, h2, f, u, uc);
 
@@ -133,10 +147,23 @@ int main(int argc, char *argv[])
     fill_ghost_cell(rank, world_size, &status, n_per_proc, u);
     resid_global = calc_resid_global(n_per_proc, h2, f, u);
 
-  }
-  if (rank == 0)
-    printf("Resid is %f\n", resid_global);
+    if (rank == 0)
+      printf("Iteration no. %d, Resid is %f\n", count, resid_global);
 
+    if (++count > max_iter)
+      break;
+  }
+  get_timestamp(&end);
+  total_time = timestamp_diff_in_seconds(start, end);
+  if (rank==0) {
+    printf("\n");
+    printf("************************************************\n");
+    printf("               Computation Finished             \n");
+    printf("************************************************\n");
+    printf("\n");
+    printf("Total running time is %f (sec)\n", total_time);
+  }
+  
   // deallocate
   free(f);
   free(u);

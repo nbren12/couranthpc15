@@ -2,6 +2,10 @@
 #include <stdlib.h>
 
 #include "mpi.h"
+#include "util.h"
+#include "math.h"
+
+
 
 
 int main(int argc, char *argv[])
@@ -33,8 +37,14 @@ int main(int argc, char *argv[])
   
   
   tag = 0;
+
+  // Setup loop and timing
+  double local_time;
+  timestamp_type t1, t2;
   
   int i;
+
+  get_timestamp(&t1);
 
   for (i = 0; i < N; i++) {
     if (rank == 0) {
@@ -48,8 +58,16 @@ int main(int argc, char *argv[])
     }
   }
 
-  if (rank == 0)
+  // Get timing information
+  get_timestamp(&t2);
+  local_time = timestamp_diff_in_seconds(t1, t2);
+
+  if (rank == 0) {
     printf("Sum is %d\n", sum);
+    printf("Total time = %f (ms)\n", 1000 * local_time);
+    printf("Number of communications = %d\n", world_size * N);
+    printf("Latency = %f (ns) \n", pow(10,9)*local_time / world_size / N);
+  }
   
   
   MPI_Finalize();

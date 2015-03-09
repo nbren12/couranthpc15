@@ -3,6 +3,8 @@
 #include <math.h>
 
 #include "mpi.h"
+#include "util.h"
+
 
 
 int main(int argc, char *argv[])
@@ -35,9 +37,14 @@ int main(int argc, char *argv[])
   int src = ( rank == 0) ? world_size -1 : rank -1;
   
   /* printf("I am %d, recv from %d, and sending to %d\n", rank, src, dest); */
-  
-  
   tag = 0;
+  
+  // Setup loop and timing
+  double local_time;
+  timestamp_type t1, t2;
+  
+  get_timestamp(&t1);
+  
   
   int i;
 
@@ -49,6 +56,18 @@ int main(int argc, char *argv[])
       MPI_Recv(sum_ptr, sum_n, MPI_INT, src, tag, MPI_COMM_WORLD, &status);
       MPI_Send(sum_ptr, sum_n, MPI_INT, dest, tag, MPI_COMM_WORLD);
     }
+  }
+
+  // Get timing information
+  get_timestamp(&t2);
+  local_time = timestamp_diff_in_seconds(t1, t2);
+  if (rank == 0){
+    printf("Work done\n");
+    printf("Total time = %f (ms)\n", 1000 * local_time);
+    printf("Number of communication = %d\n", N * world_size);
+    printf("Size of communication = %f (MB)\n", sum_n * sizeof(int) / pow(2,20) );
+    printf("Average Bandwidth = %f(MB/s)\n",
+           sum_n * sizeof(int) / pow(2,20) * N * world_size / local_time);
   }
 
   MPI_Finalize();

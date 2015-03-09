@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <unistd.h>
 
 #include "mpi.h"
 #include "util.h"
@@ -38,6 +39,9 @@ int main(int argc, char *argv[])
   
   /* printf("I am %d, recv from %d, and sending to %d\n", rank, src, dest); */
   tag = 0;
+  char hostname[100];
+  gethostname(hostname, 100);
+  printf("I am Process # %d, on %s\n",  rank, hostname);
   
   // Setup loop and timing
   double local_time;

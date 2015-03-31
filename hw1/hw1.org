@@ -1,6 +1,7 @@
 #+TITLE: HPC: Assignment 1
 #+AUTHOR: Noah D. Brenowitz
 #+DATE: March 9, 2015
+#+LATEX_HEADER: \usepackage[margin=1in]{geometry}
 #+OPTIONS: toc:nil num:nil
 
 *  Code submission
@@ -110,6 +111,7 @@ The strong scaling experiment was run on the HPC using the following python scri
 #+END_SRC
 
 The following barchart summarizes the scaling of these runs.
+
 [[file:jacobi-mpi-scaling.png]]
 
 For <12 processors, doubling the number

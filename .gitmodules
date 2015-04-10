@@ -1,0 +1,6 @@
+[submodule "hw2"]
+	path = hw2
+	url = https://github.com/nbren12/homework2.git
+[submodule "hw3"]
+	path = hw3
+	url = git@github.com:nbren12/homework3.git

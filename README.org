@@ -2,3 +2,24 @@
 * Homework 
 - [[file:hw0/problem1.org][Homework 0]]
 - [[file:hw1/hw1.org][Homework 1]]
+
+* Final Project
+
+** K-nearest neighbors in parallel 
+
+Just what it says. Maybe compare CUDA and MPI, or OpenCV.
+
+** Parallel in time monte carlo
+I am not sure which idea to do yet. I wonder if the parallel-in-time
+idea can be extended to a Monte Carlo Simulation. Two test problems
+would be some sort of SDE or a chemical reaction model with spatial
+dependence (Ising).
+
+For the chemical reaction model, the course step the course grid step
+could be done using the tau-leaping approach, and the fine grid could
+be done using the exact Gillespie algorithm or a smaller time step
+tau-leaping.
+
+Another potential problem of interest with an obvious slow/fast
+behavior would be integrating a Boussinesq system with QG as a fast
+time step.

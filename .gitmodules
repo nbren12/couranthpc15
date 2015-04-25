@@ -7,3 +7,6 @@
 [submodule "final"]
 	path = final
 	url = git@github.com:nbren12/hpc15final.git
+[submodule "hw4"]
+	path = hw4
+	url = git@github.com:nbren12/homework4.git
